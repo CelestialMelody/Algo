@@ -1,0 +1,83 @@
+#include <iostream>
+
+using namespace std;
+
+class ListNode {
+public:
+    int val;
+    ListNode* next;
+
+    ListNode() :
+        val(0), next(nullptr) {
+    }
+
+    explicit ListNode(int x) :
+        val(x), next(nullptr) {
+    }
+
+    __attribute__((unused)) explicit ListNode(int x, ListNode* next) :
+        val(x), next(next) {
+    }
+
+    ~ListNode() {
+        while (next) {
+            ListNode* temp = next->next;
+            delete next;
+            next = temp;
+        }
+        delete next;
+    };
+};
+
+class Solution {
+public:
+    static ListNode* partition(ListNode* head, int x) {
+        auto* dummyLow = new ListNode();
+        auto* dummyHigh = new ListNode();
+
+        ListNode* pLow = dummyLow;
+        ListNode* pHigh = dummyHigh;
+
+        // 需要割断联系
+        while (head != nullptr) {
+            if (head->val < x) {
+                pLow->next = head;
+                pLow = pLow->next;
+            } else {
+                pHigh->next = head;
+                pHigh = pHigh->next;
+            }
+            head = head->next;
+        }
+
+        pHigh->next = nullptr;
+        pLow->next = dummyHigh->next;
+        ListNode* res = dummyLow->next;
+
+        dummyLow->next = nullptr;
+        dummyHigh->next = nullptr;
+        delete dummyHigh;
+        delete dummyLow;
+
+        return res;
+    }
+};
+
+int main() {
+    int a;
+    auto* dummy = new ListNode();
+    ListNode* p = dummy;
+    for (int i = 0; i < 5; i++) {
+        cin >> a;
+        auto* node = new ListNode(a);
+        p->next = node;
+        p = p->next;
+    }
+    int x;
+    cin >> x;
+    ListNode* node = Solution::partition(dummy->next, x);
+    while (node) {
+        cout << node->val << " " << endl;
+        node = node->next;
+    }
+}
